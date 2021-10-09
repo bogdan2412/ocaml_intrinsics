@@ -5,7 +5,13 @@
 #ifdef ARCH_SIXTYFOUR
 static inline uint64_t crc64(uint64_t initial, uint64_t data)
 {
+#ifdef __aarch64__
+   return __builtin_arm_crc32cw(
+           __builtin_arm_crc32cw(initial, data & 0xffffffffULL),
+           data >> 32);
+#else
    return __builtin_ia32_crc32di(initial, data);
+#endif
 }
 #else // not ARCH_SIXTYFOUR
 static inline uint32_t crc32(uint32_t initial, uint32_t data)
